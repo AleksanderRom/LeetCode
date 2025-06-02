@@ -3,6 +3,7 @@
 // #include <unordered_map>
 // #include <unordered_set>
 #include <vector>
+#include <cstdint>
 
 class Solution {
    public:
@@ -17,7 +18,7 @@ class Solution {
                 int l = j + 1;
                 int r = count - 1;
                 while (l < r) {
-                    int sum = n[i] + n[j] + n[l] + n[r];
+                    int64_t sum = int64_t(n[i]) + int64_t(n[j]) + int64_t(n[l]) + int64_t(n[r]);
                     if (sum < target) {
                         ++l;
                         continue;
@@ -25,8 +26,16 @@ class Solution {
                         --r;
                         continue;
                     } else {
-                        result.push_back(std::vector{n[i], n[j], n[l], n[r]});
-                        break;
+                        std::vector<int> buf{n[i], n[j], n[l], n[r]};
+                        bool flag = false;
+                        for (auto x : result) {
+                            if (x == buf) flag = true;
+                        }
+                        if (flag == false) {
+                            result.push_back(std::move(buf));
+                        }
+                        ++l;
+                        // break;
                     }
                 }
             }
@@ -38,9 +47,20 @@ class Solution {
 int main() {
     Solution s;
     using vec = std::vector<int>;
+    // {
+    //     vec v{-3, -2, -1, 0, 0, 1, 2, 3};
+    //     assert((std::vector<vec>{{-3, -2, 2, 3}, {-3, -1, 1, 3}, 
+    //                             {-3, 0, 0, 3}, {-3, 0, 1, 2}, 
+    //                             {-2, -1, 0, 3}, {-2, -1, 1, 2}, 
+    //                             {-2, 0, 0, 2}, {-1, 0, 0, 1}} == s.fourSum(v, 0)));
+    // }
     {
-        vec v{0,0,0,0};
-        assert((std::vector<vec>{vec{0,0,0,0}} == s.fourSum(v, 0)));
+        vec v{1000000000,1000000000,1000000000,1000000000};
+        assert((std::vector<vec>{vec{0, 0, 0, 0}} == s.fourSum(v, 0)));
+    }
+    {
+        vec v{0, 0, 0, 0};
+        assert((std::vector<vec>{vec{0, 0, 0, 0}} == s.fourSum(v, 0)));
     }
     {
         vec v{};

@@ -14,28 +14,27 @@ class Solution {
         std::vector<std::vector<int>> result;
 
         for (int i = 0; i < count - 3; ++i) {
+            if (i > 0 && n[i] == n[i - 1]) continue;
             for (int j = i + 1; j < count - 2; ++j) {
+                if (j > i + 1 && n[j] == n[j -1]) continue;
                 int l = j + 1;
                 int r = count - 1;
                 while (l < r) {
                     int64_t sum = int64_t(n[i]) + int64_t(n[j]) + int64_t(n[l]) + int64_t(n[r]);
                     if (sum < target) {
                         ++l;
-                        continue;
                     } else if (sum > target) {
                         --r;
-                        continue;
                     } else {
-                        std::vector<int> buf{n[i], n[j], n[l], n[r]};
-                        bool flag = false;
-                        for (auto x : result) {
-                            if (x == buf) flag = true;
+                        result.push_back(std::vector<int>{n[i], n[j], n[l], n[r]});
+                        while (l < r && n[l] == n[l + 1]) {
+                            ++l;
                         }
-                        if (flag == false) {
-                            result.push_back(std::move(buf));
+                        while (l < r && n[r] == n [r - 1]) {
+                            --r;
                         }
+                        --r;
                         ++l;
-                        // break;
                     }
                 }
             }
@@ -47,13 +46,17 @@ class Solution {
 int main() {
     Solution s;
     using vec = std::vector<int>;
-    // {
-    //     vec v{-3, -2, -1, 0, 0, 1, 2, 3};
-    //     assert((std::vector<vec>{{-3, -2, 2, 3}, {-3, -1, 1, 3}, 
-    //                             {-3, 0, 0, 3}, {-3, 0, 1, 2}, 
-    //                             {-2, -1, 0, 3}, {-2, -1, 1, 2}, 
-    //                             {-2, 0, 0, 2}, {-1, 0, 0, 1}} == s.fourSum(v, 0)));
-    // }
+    {
+        vec v{2, 2, 2, 2, 2};
+        assert((std::vector<vec>{vec{2, 2, 2, 2}} == s.fourSum(v, 8)));
+    }
+    {
+        vec v{-3, -2, -1, 0, 0, 1, 2, 3};
+        assert((std::vector<vec>{{-3, -2, 2, 3}, {-3, -1, 1, 3}, 
+                                {-3, 0, 0, 3}, {-3, 0, 1, 2}, 
+                                {-2, -1, 0, 3}, {-2, -1, 1, 2}, 
+                                {-2, 0, 0, 2}, {-1, 0, 0, 1}} == s.fourSum(v, 0)));
+    }
     {
         vec v{1000000000,1000000000,1000000000,1000000000};
         assert((std::vector<vec>{vec{0, 0, 0, 0}} == s.fourSum(v, 0)));

@@ -61,9 +61,45 @@ public:
 
 // };
 
+std::ostream& operator<<(std::ostream& out, const std::unordered_set<char>& conds) {
+    char i = '9';
+    auto it = conds.begin();
+    while (i != '0') {
+        if (it != conds.end() && *it == i) {
+            std::cout << *it;
+            ++it; --i;
+        } else  {
+            std::cout << '.';
+            --i;
+        }
+        // } else if (conds.size() == 1 && *conds.begin() == '.') {
+    // }
+    // for (auto it = conds.begin(); it != conds.end(); ++it) {
+    //     // while (i != 0) {
+    //         if (*it == i--) {
+    //             std::cout << *it;
+    //         } else if (conds.size() == 1 && *conds.begin() == '.') {
+    //             std::cout << "........."s;
+    //         } else {
+    //             std::cout << '.';
+    //         }
+        // }
+        
+    }
+    return out;
+}
+
 class Solution {
+private:
+int iteration_ = 0;
+std::vector<std::vector<std::unordered_set<char>>> condidate_;
 public:
-    void PrintBoard(std::vector<std::vector<char>>& board) {
+
+    void PrintBoard(std::vector<std::vector<char>>& board, int row, int colum) {
+        std::cout << "iteration: " << iteration_++ << std::endl;
+        std::cout << "row: " << row << std::endl;
+        std::cout << "colum: " << colum << std::endl;
+        std::cout << "value: " << board[row][colum] << std::endl;
         std::cout << "----------------------" << std::endl;
         for (int row = 0; row < 9; ++row) {
             if (row == 3 || row == 6) {
@@ -79,8 +115,31 @@ public:
             }
             std::cout << "----------------------" << std::endl;
             std::cout << std::endl;
-
     }
+
+
+
+    void PrintCondidate() {
+        std::cout << "condidate: "  << std::endl;
+
+        std::cout << "----------------------------------------------------------------------------------------------" << std::endl;
+        for (int row = 0; row < 9; ++row) {
+            if (row == 3 || row == 6) {
+                std::cout << "----------------------------------------------------------------------------------------------" << std::endl;
+            }
+            for (int colum = 0; colum < 9; ++colum) {
+                if (colum == 3 || colum == 6 || colum == 0) {
+                    std::cout << '|';
+                } 
+                // std::cout << tttt << ' ' ;
+                std::cout << condidate_[row][colum] << ' ' ;
+            }
+            std::cout << '|' << std::endl;
+            }
+            std::cout << "----------------------------------------------------------------------------------------------" << std::endl;
+            std::cout << std::endl;
+    }
+
     std::vector<char> GetBox(std::vector<std::vector<char>>& board, int row, int colum) {
         int min_row = (row / 3) * 3;
         int min_colum = (colum / 3) * 3;
@@ -150,8 +209,11 @@ public:
             int pos = PositionIsCountNumber(box_index);
                 if (pos >= 0) {
                     board[row + pos / 3][colum + (pos % 3)] = number;
-                    PrintBoard(board);
-                    int hhh = 0;
+                    condidate_[row + pos / 3][colum + (pos % 3)].clear();
+                    condidate_[row + pos / 3][colum + (pos % 3)].insert('.'); // = std::unordered_set<char>('.');
+                    PrintBoard(board, (row + pos / 3), (colum + (pos % 3)));
+                    PrintCondidate();
+                    // int hhh = 0;
                 }
             }
             }
@@ -182,8 +244,27 @@ public:
         }
         return true;
     }
+    void GetTableCondidate(std::vector<std::vector<char>>& board){
+        std::unordered_set set{'1','2','3','4','5','6','7','8','9'};
+        std::unordered_set set_void{'.'};
+        std::vector<std::unordered_set<char>> v_set(9, set);
+        std::vector<std::vector<std::unordered_set<char>>> condidate(9, v_set);
+        condidate_ = std::move(condidate);
+        for (int row = 0; row < 9; ++row) {
+            for (int colum = 0; colum < 9; ++colum) {
+                if (board[row][colum] != '.') {
+                    condidate_[row][colum].clear();
+                    condidate_[row][colum] = set_void;
+                }
+            }
+        }
+
+    }
+
     void solveSudoku(std::vector<std::vector<char>>& board) {
-        PrintBoard(board);
+        GetTableCondidate(board);
+        PrintBoard(board, 0, 0);
+        PrintCondidate();
         int iter = 1;
         while(true) {
             for (int row = 0; row < 9; ++row) {
@@ -191,13 +272,12 @@ public:
                     if (board[row][colum] == '.') {
                         auto temp = InsertInt(board, row, colum);
                         if (temp.size() == 1) {
-                            //найдена ячейка для вставки
                             board[row][colum] = temp.back();
-                            std::cout << "iteration: " << iter++ << std::endl;
-                            std::cout << "row: " << row << std::endl;
-                            std::cout << "colum: " << colum << std::endl;
-                            std::cout << "value: " << temp.back() << std::endl;
-                            PrintBoard(board);
+                             condidate_[row][colum].clear();
+                            condidate_[row][colum].insert('.'); // = std::unordered_set<char>('.');
+                            // condidate_[row][colum].insert('.');
+                            PrintBoard(board, row, colum);
+                            PrintCondidate();
                             row = 0;
                             colum = 0;
                         }
@@ -242,6 +322,8 @@ public:
     // std::vector<std::unordered_set<char>> row_;
     // std::vector<std::unordered_set<char>> colum_;
 };
+
+
 
 
 int main () {

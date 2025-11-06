@@ -1,0 +1,10 @@
+-- SELECT *
+-- FROM Employee;
+
+-- SELECT *
+-- FROM Bonus;
+
+SELECT e.name, b.bonus
+FROM Employee AS e
+LEFT JOIN Bonus AS b ON e.empId = b.empId
+WHERE Bonus < 1000 OR Bonus IS NULL;

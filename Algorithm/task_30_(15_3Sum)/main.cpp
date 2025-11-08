@@ -1,13 +1,11 @@
 #include <algorithm>
 #include <cassert>
-// #include <unordered_map>
-// #include <unordered_set>
 #include <vector>
 
 class Solution {
    public:
     int threeSumClosest(std::vector<int>& nums, int target) {
-        // optimal
+
         int n = nums.size();
         std::vector<std::vector<int>> ans;
         sort(nums.begin(), nums.end());

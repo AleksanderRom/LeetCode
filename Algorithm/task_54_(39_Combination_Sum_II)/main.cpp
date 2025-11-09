@@ -14,10 +14,6 @@ class Solution {
         target_ = target;
         vector<int> arr;
         RecursFind(0, arr, 0);
-        // vector<vector<int>> otvet;
-        // for (auto& temp : result_) {
-        //     otvet.push_back(temp);
-        // }
         return result_;
     }
 

@@ -13,31 +13,6 @@ class BlackBrick {
     explicit BlackBrick(int count)
         : black_brick_(count) {}
 
-    explicit BlackBrick()
-        : black_brick_(0) {}
-
-explicit BlackBrick(pair<vector<int>, int> vec)
-    : black_brick_(std::move(vec.first))
-    , max_count(vec.second) {}
-
-
-    BlackBrick(BlackBrick&& other) {
-        swap(other.black_brick_, black_brick_);
-        max_count = other.max_count;
-    }
-
-    BlackBrick& operator=(BlackBrick&& other) noexcept {
-        if (this != &other) {
-            black_brick_ = std::move(other.black_brick_);
-            max_count = other.max_count;
-            other.max_count = 0;
-        }
-        return *this;
-    }
-
-    BlackBrick(const BlackBrick& other) = default;
-    BlackBrick& operator=(const BlackBrick& other) = default;
-
     void Clear() {
         for (auto i = 0; i < max_count; ++i) {
             black_brick_[i] = 0;
@@ -47,6 +22,7 @@ explicit BlackBrick(pair<vector<int>, int> vec)
 
     int GetNum(int i) {
         if (i == 0) return 0;
+        // return black_brick_[i-1];
         return std::accumulate(black_brick_.begin(), black_brick_.begin() + i, 0);
     }
 
@@ -54,6 +30,11 @@ explicit BlackBrick(pair<vector<int>, int> vec)
         for (auto i = 0; i < n; ++i) {
             ++black_brick_[i];
         }
+        // for(auto i = 0; i < n; ++i) {
+        //     int prev = (i != 0) ? black_brick_[i -1] : 0;
+        //     black_brick_[i] += prev + 1;
+
+        // }
         max_count = max(max_count, n);
     }
 
@@ -68,12 +49,9 @@ explicit BlackBrick(pair<vector<int>, int> vec)
 
 class Solution {
     struct info {
-        info(int _pos, int _h, int _prev_water, int _max_count)
-            : pos(_pos), h(_h), prev_water(_prev_water), b_brick(_max_count) {}
         int pos = 0;
         int h = 0;
         int prev_water = 0;
-        BlackBrick b_brick;
     };
 
     int MaxHeight(const vector<int>& heigth) {
@@ -96,7 +74,7 @@ class Solution {
             if (cur_h == 0) continue;
 
             if (stack.empty()) {               // первая встреча башни
-                stack.push({i, cur_h, 0, 0});  //, BlackBrick{max_br}});
+                stack.push({i, cur_h, 0});  //, BlackBrick{max_br}});
             } else {
                 auto st = stack.top();
 
@@ -108,16 +86,13 @@ class Solution {
 
                 if (cur_h < st.h) {
                     water = st.prev_water + ((i - st.pos - 1) * cur_h) - black_brick.GetNum(cur_h);
-                    stack.push({i, cur_h, water, 0});
+                    stack.push({i, cur_h, water});
                     black_brick.AddBrick(cur_h);
                 } else {
                     if (!stack.empty()) stack.pop();
                     water = st.prev_water + ((i - st.pos - 1) * st.h) - black_brick.GetNum(st.h);
 
-                    stack.push({i, cur_h, water, 0});
-                    // auto temp = stack.top();  //.prev_water(std::move(black_brick));
-                    // temp.b_brick = std::move(black_brick);
-                    stack.top().b_brick = std::move(black_brick);
+                    stack.push({i, cur_h, water});
                     black_brick.Clear();
                 }
             }

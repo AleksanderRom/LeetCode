@@ -1,51 +1,33 @@
-#include <algorithm>
+// #include <algorithm>
 #include <cassert>
-// #include <numeric>
-// #include <stack>
-#include <string>
+// #include <string>
 #include <vector>
-
 
 using namespace std;
 
 class Solution {
-    int MaxHeight(const vector<int>& heigth) {
-        int max = 0;
-        for (auto num : heigth) {
-            max = std::max(max, num);
-        }
-        return max;
-    }
 
    public:
     int trap(const vector<int>& height) {
+        int left = 0, right = height.size() - 1;
+        int max_left = height[left];
+        int max_right = height[right];
         int water = 0;
-        int h = MaxHeight(height);
-        for (auto i = 1; i <= h; ++i) {
-            bool open = false;
-            int pos_open = 0;
-            bool pos_closed = false;
-            for (auto j = 0; j < height.size(); ++j) {
-
-                if (height[j] < i && open)  {
-                    pos_closed = true;
-                }
-
-                if (height[j] >= i && pos_closed) {
-                    water += j - pos_open - 1;
-                }
-
-                if (height[j] >= i) {
-                    open = true;
-                    pos_open = j;
-                } 
-                
+        while (left != right) {
+            if (max_left < max_right ) {
+                ++left;
+                max_left = max(max_left, height[left]);
+                water += max_left - height[left];
+            }else {
+                --right;
+                max_right = max(max_right, height[right]);
+                water += max_right - height[right];
             }
+
         }
         return water;
     }
 
-   private:
 };
 
 void Test();
@@ -55,6 +37,10 @@ int main() {
 }
 
 void Test() {
+    {
+        Solution s;
+        assert(3 == s.trap({8, 5, 7, 7, 4, 5, 1,0}));
+    }
     {
         Solution s;
         assert(15 == s.trap({4, 0, 2, 1, 2, 0, 4}));
